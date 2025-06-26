@@ -28,25 +28,33 @@ public class BlackjackGUI extends JFrame {
     }
 
     private void configurarInterface() {
-        JPanel painel = new JPanel();
-        painel.setLayout(new BorderLayout());
+        JPanel painelPrincipal = new JPanel(new BorderLayout(10, 10));
 
         areaCartas.setEditable(false);
         areaCartas.setFont(new Font("Monospaced", Font.PLAIN, 14));
 
-        JPanel botoes = new JPanel();
-        botoes.add(hitButton);
-        botoes.add(standButton);
+        JScrollPane scroll = new JScrollPane(areaCartas);
 
-        painel.add(dealerLabel, BorderLayout.NORTH);
-        painel.add(new JScrollPane(areaCartas), BorderLayout.CENTER);
-        painel.add(botoes, BorderLayout.SOUTH);
-        painel.add(resultadoLabel, BorderLayout.PAGE_END);
+        JPanel painelTopo = new JPanel(new BorderLayout());
+        dealerLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
+        painelTopo.add(dealerLabel, BorderLayout.NORTH);
 
-        add(painel);
+        JPanel painelBotoes = new JPanel();
+        painelBotoes.setLayout(new FlowLayout());
+        painelBotoes.add(hitButton);
+        painelBotoes.add(standButton);
 
-        hitButton.addActionListener(e -> pedirCarta());
-        standButton.addActionListener(e -> pararRodada());
+        JPanel painelRodape = new JPanel(new BorderLayout());
+        resultadoLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        painelRodape.add(resultadoLabel, BorderLayout.CENTER);
+
+        painelPrincipal.add(painelTopo, BorderLayout.NORTH);
+        painelPrincipal.add(scroll, BorderLayout.CENTER);
+        painelPrincipal.add(painelBotoes, BorderLayout.SOUTH);
+        painelPrincipal.add(painelRodape, BorderLayout.PAGE_END);
+
+        setContentPane(painelPrincipal);
+        pack(); // Redimensiona corretamente
     }
 
     private void conectarAoServidor() {
