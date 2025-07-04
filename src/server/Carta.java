@@ -1,6 +1,13 @@
+/**
+ * representa uma carta do baralho no jogo Blackjack.
+ * guarda valor e naipe.
+ * responsável por calcular o valor da carta no jogo.
+ */
 package server;
 
-public class Carta {
+import java.io.Serializable;
+
+public class Carta implements Serializable {
     private final String valor;
     private final String naipe;
 
@@ -9,19 +16,16 @@ public class Carta {
         this.naipe = naipe;
     }
 
+    /** retorna valor numérico usado */
     public int getValorNumerico() {
         if (valor.matches("\\d+")) {
             return Integer.parseInt(valor);
         } else if (valor.equals("J") || valor.equals("Q") || valor.equals("K")) {
             return 10;
         } else if (valor.equals("A")) {
-            return 11; // Ás vale 11 por padrão, será ajustado depois
+            return 11;
         }
         return 0;
-    }
-
-    public String getValor() {
-        return valor;
     }
 
     public boolean isAs() {
@@ -32,5 +36,4 @@ public class Carta {
     public String toString() {
         return valor + naipe;
     }
-
 }

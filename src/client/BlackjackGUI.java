@@ -1,3 +1,8 @@
+/**
+ * interface grafica do Blackjack usando Swing.
+ * conecta ao servidor RMI e permite jogar via botoes.
+ * Botbes para pedir carta, parar e iniciar nova rodada.
+ */
 package client;
 
 import shared.GameService;
@@ -7,69 +12,92 @@ import java.awt.*;
 import java.rmi.Naming;
 import java.util.List;
 
+import static javax.swing.JOptionPane.YES_NO_OPTION;
+
 public class BlackjackGUI extends JFrame {
     private GameService jogo;
     private String nome;
 
-    private final JTextArea areaCartas = new JTextArea(5, 30);
-    private final JLabel dealerLabel = new JLabel("Dealer: ?");
+    private final JTextArea areaCartas = new JTextArea(3, 28); // Menor área!
+    private final JLabel dealerLabel = new JLabel("Carta visível do Dealer: ?");
     private final JLabel resultadoLabel = new JLabel("");
     private final JButton hitButton = new JButton("Pedir Carta");
     private final JButton standButton = new JButton("Parar");
 
     public BlackjackGUI() {
         setTitle("Blackjack - Jogo 21");
-        setSize(500, 400);
-        setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setResizable(false);
+        setSize(520, 360);
+        setLocationRelativeTo(null);
 
         configurarInterface();
+        setVisible(true);
         conectarAoServidor();
     }
 
     private void configurarInterface() {
-        JPanel painelPrincipal = new JPanel(new BorderLayout(10, 10));
+        JPanel painel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(8, 8, 8, 8);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
 
+        dealerLabel.setFont(new Font("Arial", Font.BOLD, 15));
         areaCartas.setEditable(false);
-        areaCartas.setFont(new Font("Monospaced", Font.PLAIN, 14));
+        areaCartas.setFont(new Font("Monospaced", Font.PLAIN, 18));
 
-        JScrollPane scroll = new JScrollPane(areaCartas);
+        // dealer label (parte de cima)
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        gbc.weightx = 1;
+        gbc.weighty = 0;
+        painel.add(dealerLabel, gbc);
 
-        JPanel painelTopo = new JPanel(new BorderLayout());
-        dealerLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
-        painelTopo.add(dealerLabel, BorderLayout.NORTH);
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.gridwidth = 2;
+        gbc.weightx = 1;
+        gbc.weighty = 1;
+        gbc.fill = GridBagConstraints.BOTH;
+        painel.add(new JScrollPane(areaCartas), gbc);
 
-        JPanel painelBotoes = new JPanel();
-        painelBotoes.setLayout(new FlowLayout());
-        painelBotoes.add(hitButton);
-        painelBotoes.add(standButton);
+        //botoes rodapé
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.gridwidth = 1;
+        gbc.weightx = 0.5;
+        gbc.weighty = 0;
+        gbc.fill = GridBagConstraints.NONE;
+        painel.add(hitButton, gbc);
 
-        JPanel painelRodape = new JPanel(new BorderLayout());
-        resultadoLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        painelRodape.add(resultadoLabel, BorderLayout.CENTER);
+        gbc.gridx = 1;
+        painel.add(standButton, gbc);
 
-        painelPrincipal.add(painelTopo, BorderLayout.NORTH);
-        painelPrincipal.add(scroll, BorderLayout.CENTER);
-        painelPrincipal.add(painelBotoes, BorderLayout.SOUTH);
-        painelPrincipal.add(painelRodape, BorderLayout.PAGE_END);
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        gbc.gridwidth = 2;
+        gbc.weightx = 1;
+        gbc.weighty = 0;
+        gbc.anchor = GridBagConstraints.CENTER;
+        painel.add(resultadoLabel, gbc);
 
-        setContentPane(painelPrincipal);
-        pack(); // Redimensiona corretamente
+        setContentPane(painel);
+
+        hitButton.addActionListener(e -> pedirCarta());
+        standButton.addActionListener(e -> pararRodada());
     }
 
     private void conectarAoServidor() {
         try {
             jogo = (GameService) Naming.lookup("rmi://localhost/BlackjackService");
-
             nome = JOptionPane.showInputDialog(this, "Digite seu nome:");
             if (nome == null || nome.isBlank()) {
                 JOptionPane.showMessageDialog(this, "Nome inválido.");
                 System.exit(0);
             }
-
             jogo.connect(nome);
             iniciarRodada();
-
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Erro ao conectar: " + e.getMessage());
             System.exit(1);
@@ -84,7 +112,6 @@ public class BlackjackGUI extends JFrame {
             dealerLabel.setText("Carta visível do Dealer: " + dealerVisivel);
             areaCartas.setText("Suas cartas: " + cartas);
             resultadoLabel.setText("");
-
             hitButton.setEnabled(true);
             standButton.setEnabled(true);
         } catch (Exception e) {
@@ -96,15 +123,22 @@ public class BlackjackGUI extends JFrame {
         try {
             List<String> cartas = jogo.hit(nome);
             areaCartas.setText("Suas cartas: " + cartas);
-            int pontos = calcularPontos(cartas);
-
-            if (pontos > 21) {
-                resultadoLabel.setText("Você estourou! Pontuação: " + pontos);
-                hitButton.setEnabled(false);
-                standButton.setEnabled(false);
-            }
         } catch (Exception e) {
-            mostrarErro("Erro ao pedir carta: " + e.getMessage());
+
+            String msg = e.getMessage();
+            if (msg == null) msg = "Você estourou ou ocorreu um erro.";
+
+            msg = msg.replaceFirst(".*RemoteException: ?", "");
+            resultadoLabel.setText("<html>" + msg.replaceAll("\n", "<br>") + "</html>");
+            hitButton.setEnabled(false);
+            standButton.setEnabled(false);
+
+            int opcao = JOptionPane.showConfirmDialog(this, "Você estourou! Deseja jogar novamente?", "Nova Rodada", YES_NO_OPTION);
+            if (opcao == JOptionPane.YES_OPTION) {
+                iniciarRodada();
+            } else {
+                System.exit(0);
+            }
         }
     }
 
@@ -115,7 +149,7 @@ public class BlackjackGUI extends JFrame {
             hitButton.setEnabled(false);
             standButton.setEnabled(false);
 
-            int opcao = JOptionPane.showConfirmDialog(this, "Deseja jogar novamente?", "Nova Rodada", JOptionPane.YES_NO_OPTION);
+            int opcao = JOptionPane.showConfirmDialog(this, "Deseja jogar novamente?", "Nova Rodada", YES_NO_OPTION);
             if (opcao == JOptionPane.YES_OPTION) {
                 iniciarRodada();
             } else {
@@ -127,15 +161,12 @@ public class BlackjackGUI extends JFrame {
     }
 
     private int calcularPontos(List<String> cartas) {
-        int total = 0;
-        int ases = 0;
+        int total = 0, ases = 0;
         for (String carta : cartas) {
             String valor = carta.replaceAll("[^A-Z0-9]", "");
-            if (valor.matches("\\d+")) {
-                total += Integer.parseInt(valor);
-            } else if ("JQK".contains(valor)) {
-                total += 10;
-            } else if ("A".equals(valor)) {
+            if (valor.matches("\\d+")) total += Integer.parseInt(valor);
+            else if ("JQK".contains(valor)) total += 10;
+            else if ("A".equals(valor)) {
                 total += 11;
                 ases++;
             }
@@ -150,5 +181,4 @@ public class BlackjackGUI extends JFrame {
     private void mostrarErro(String mensagem) {
         JOptionPane.showMessageDialog(this, mensagem);
     }
-
 }

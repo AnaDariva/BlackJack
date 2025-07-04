@@ -1,3 +1,7 @@
+/**
+ * armazena o estado individual de cada jogador: cartas, pontuação e histórico.
+ * cada jogador conectado ao servidor tem uma instância única desta classe.
+ */
 package server;
 
 import java.util.ArrayList;
@@ -46,20 +50,20 @@ public class Jogador {
         return calcularPontuacao(cartasDealer);
     }
 
+    /**
+     * logica oficial para tratar o Ás
+     */
     private int calcularPontuacao(List<Carta> cartas) {
         int total = 0;
         int ases = 0;
-
         for (Carta carta : cartas) {
             total += carta.getValorNumerico();
             if (carta.isAs()) ases++;
         }
-
         while (total > 21 && ases > 0) {
             total -= 10;
             ases--;
         }
-
         return total;
     }
 

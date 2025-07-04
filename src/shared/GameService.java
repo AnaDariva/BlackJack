@@ -1,3 +1,7 @@
+/**
+ * interface remota para o jogo Blackjack via Java RMI.
+ * declara todos os métodos que podem ser chamados remotamente pelos clientes.
+ */
 package shared;
 
 import java.rmi.Remote;
