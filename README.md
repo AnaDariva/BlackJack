@@ -2,8 +2,6 @@
 
 **Linguagem**: Java  
 **IDE**: IntelliJ IDEA  
-**Diagramas**: Visual Paradigm Community
-**Requisitos e Casos de Uso**: word  
 
 <h2 align="left"> Language & Tools: </h2>
 
