@@ -16,7 +16,6 @@ public class Carta implements Serializable {
         this.naipe = naipe;
     }
 
-    /** retorna valor numérico usado */
     public int getValorNumerico() {
         if (valor.matches("\\d+")) {
             return Integer.parseInt(valor);
