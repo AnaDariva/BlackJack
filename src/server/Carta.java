@@ -1,7 +1,7 @@
 /**
  * representa uma carta do baralho no jogo Blackjack.
  * guarda valor e naipe.
- * responsável por calcular o valor da carta no jogo
+ * responsável por calcular o valor da carta no jogo.
  */
 package server;
 
