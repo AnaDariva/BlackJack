@@ -2,7 +2,7 @@
  * armazena o estado individual de cada jogador: cartas, pontuação e histórico.
  * cada jogador conectado ao servidor tem uma instância única desta classe.
  */
-package server
+package server;
 
 import java.util.ArrayList;
 import java.util.List;
