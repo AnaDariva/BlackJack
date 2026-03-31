@@ -1,6 +1,5 @@
 # Projeto para Aula de Aplicações Distribuídas e Concorrentes
 
-teste
 
 **Linguagem**: Java
 **IDE**: IntelliJ IDEA  
