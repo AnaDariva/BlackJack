@@ -60,6 +60,6 @@ Este projeto desenvolve um jogo de cartas Blackjack (21) utilizando a tecnologia
 ┃ ┗ 📂 br.edu.utfpr.pb.pw44s.common &nbsp;&nbsp;# Interfaces e classes compartilhadas (GameService, Carta, Jogador)  
 ┗ README.md &nbsp;&nbsp;# Documentação  
 
-## 👩‍💻 
+## 👩‍💻 Autor
 
 **Ana Luisa Dariva Ramos – Acadêmica de Análise e Desenvolvimento de Sistemas na UTFPR-PB**
