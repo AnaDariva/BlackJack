@@ -1,7 +1,7 @@
 # Projeto para Aula de Aplicações Distribuídas e Concorrentes
 
 
-**Linguagem**: Java
+**Linguagem**: 
 **IDE**: IntelliJ IDEA  
 
 <h2 align="left"> Language & Tools: </h2>
